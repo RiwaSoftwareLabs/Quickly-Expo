@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "quickly",
+    "slug": "quickly",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "quickly",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["assets/images/*"],
+    "ios": {
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      },
+      "supportsTablet": true,
+      "bundleIdentifier": "com.new.quickly"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.new.quickly"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "server", // static
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": ["expo-router", "expo-localization", "expo-secure-store"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2f59704e-de6b-4c1f-9044-22f7aee73a40"
+      }
+    },
+    "owner": "tycheros",
+    "locales": {
+      "en": "./languages/english.json",
+      "ar": "./languages/arabic.json"
+    }
+  }
+}

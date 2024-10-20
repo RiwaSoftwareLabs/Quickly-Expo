@@ -1,0 +1,90 @@
+{
+  "name": "Mega Deals",
+  "CFBundleDisplayName": "Mega Deals",
+  "home": {
+    "title": "Home",
+    "sectionTitle": "Game Deals",
+    "detailsTitle": "Details",
+    "productInformation": "Product Information",
+    "shippingReturns": "Shipping & Returns"
+  },
+  "cart": {
+    "title": "Cart",
+    "goCheckout": "Go To Checkout",
+    "subTotal": "Sub Total",
+    "add": "Add to Cart",
+    "remove": "Delete",
+    "variant": "Variant"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "summary": "Summary",
+    "itemSummary": "Your Items Preview",
+    "total": "Total",
+    "discount": "Discount",
+    "subtotal": "Subtotal",
+    "unitPrice": "Unit Price",
+    "quantity": "Quantity",
+    "proceedToPayment": "Complete Purchase",
+    "proceedToCheckout": "Review & Pay",
+    "noPaymentProviderAvailable": "Manual Payment",
+    "success": "Order Successful",
+    "placed": "Your order has been placed successfully.",
+    "apply": "Apply",
+    "promoCode": "Promo Code",
+    "enterPromoCode": "Enter Promo Code",
+    "appliedCodes": "Applied Codes"
+  },
+  "order": {
+    "title": "Order Confirmation",
+    "orderDetails": "Order Details",
+    "orderNumber": "Order Number",
+    "orderDate": "Order Date",
+    "emailConfirmation": "Email Confirmation",
+    "itemsSummary": "Items Summary",
+    "total": "Total",
+    "deliveryDetails": "Delivery Details",
+    "paymentDetails": "Payment Details",
+    "cardEnding": "Card Ending"
+  },
+  "profile": {
+    "title": "Profile",
+    "chooseLanguage": "Choose Language",
+    "chooseCurrency": "Choose Currency",
+    "searchCurrency": "Search Currency...",
+    "chooseAppearance": "Choose Appearance",
+    "dark": "Dark",
+    "light": "Light",
+    "locale": "English"
+  },
+  "news": {
+    "title": "News",
+    "publishedOn": "Published on"
+  },
+  "legal": {
+    "title": "Legal",
+    "termsAndConditions": "Terms and Conditions",
+    "privacyPolicy": "Privacy Policy"
+  },
+  "faq": {
+    "title": "FAQ"
+  },
+  "about": {
+    "title": "About"
+  },
+  "common": {
+    "close": "Close",
+    "ok": "Ok",
+    "goBack": "Back",
+    "loading": "Loading...",
+    "noData": "No data"
+  },
+  "csr": {
+    "title": "CSR",
+    "downloadReport": "Download Report"
+  },
+  "help": {
+    "title": "Contact",
+    "followUs": "Follow Us"
+  }
+}

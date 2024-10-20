@@ -1,0 +1,89 @@
+{
+  "name": "ميغا ديلز",
+  "CFBundleDisplayName": "ميغا ديلز",
+  "home": {
+    "title": "الرئيسية",
+    "sectionTitle": "عروض الألعاب",
+    "detailsTitle": "التفاصيل",
+    "productInformation": "معلومات المنتج",
+    "shippingReturns": "التوصيل والإرجاع"
+  },
+  "cart": {
+    "title": "عربة التسوق",
+    "goCheckout": "الذهاب إلى الدفع",
+    "subTotal": "المجموع الفرعي",
+    "add": "إضافة",
+    "remove": "إزالة",
+    "variant": "المتغير"
+  },
+  "checkout": {
+    "title": "الملخص",
+    "summary": "الملخص",
+    "itemSummary": "معاينة العناصر",
+    "total": "المجموع",
+    "discount": "الخصم",
+    "subtotal": "المجموع الفرعي",
+    "unitPrice": "سعر الوحدة",
+    "quantity": "الكمية",
+    "proceedToPayment": "إكمال الشراء",
+    "noPaymentProviderAvailable": "دفع يدوي",
+    "success": "نجاح الطلب",
+    "placed": "تم تقديم طلبك بنجاح.",
+    "apply": "تطبيق",
+    "promoCode": "رمز الخصم",
+    "enterPromoCode": "أدخل رمز الخصم",
+    "appliedCodes": "الرموز المطبقة"
+  },
+  "order": {
+    "title": "تأكيد الطلب",
+    "orderDetails": "تفاصيل الطلب",
+    "orderNumber": "رقم الطلب",
+    "orderDate": "تاريخ الطلب",
+    "emailConfirmation": "تأكيد البريد الإلكتروني",
+    "itemsSummary": "ملخص العناصر",
+    "total": "الإجمالي",
+    "deliveryDetails": "تفاصيل التوصيل",
+    "paymentDetails": "تفاصيل الدفع",
+    "cardEnding": "نهاية البطاقة"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "chooseLanguage": "اختر اللغة",
+    "chooseCurrency": "اختر العملة",
+    "searchCurrency": "ابحث عن العملة...",
+    "chooseAppearance": "اختر المظهر",
+    "dark": "داكن",
+    "light": "فاتح",
+    "locale": "العربية"
+  },
+  "news": {
+    "title": "الأخبار",
+    "publishedOn": "نشر في"
+  },
+  "legal": {
+    "title": "القوانين",
+    "termsAndConditions": "أحكام الاستخدام",
+    "privacyPolicy": "سياسة الخصوصية"
+  },
+  "faq": {
+    "title": "الأسئلة الشائعة"
+  },
+  "about": {
+    "title": "عنا"
+  },
+  "common": {
+    "close": "إغلاق",
+    "ok": "موافق",
+    "goBack": "العودة",
+    "loading": "جاري التحميل...",
+    "noData": "لا يوجد بيانات"
+  },
+  "csr": {
+    "title": "CSR",
+    "downloadReport": "تحميل التقرير"
+  },
+  "help": {
+    "title": "المساعدة",
+    "followUs": "تابعنا"
+  }
+}
