@@ -31,16 +31,22 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
       className={`flex-row items-center justify-between pt-12 px-6 ${isRTL ? "flex-row-reverse" : ""}`}
     >
       {/* Avatar */}
-      <Image
-        className="w-16 h-16 rounded-full border"
-        source={require("@/assets/images/avatar.png")}
-        placeholder={{ blurhash }}
-        contentFit="contain"
-        transition={500}
+      <ThemedView
+        className="w-16 h-16 rounded-full border items-center justify-center"
         style={{
           borderColor: Colors[colorScheme ?? "light"].primary,
+          backgroundColor: getColor("primary"),
         }}
-      />
+      >
+        <ThemedText
+          className="text-2xl font-bold"
+          style={{
+            color: getColor("background"),
+          }}
+        >
+          {name.split(' ').map(word => word[0]).join('').toUpperCase()}
+        </ThemedText>
+      </ThemedView>
       {/* Name and Email */}
       <ThemedView className={`flex-1 ${isRTL ? "mr-4" : "ml-4"}`}>
         <ThemedText

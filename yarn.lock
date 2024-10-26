@@ -7475,6 +7475,11 @@ react-native-international-phone-number@^0.7.6:
   dependencies:
     react-native-country-codes-picker "2.3.4"
 
+react-native-otp-entry@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/react-native-otp-entry/-/react-native-otp-entry-1.7.2.tgz#4d0d2d255b8b3f7c99fcc414acd9b19b4737d862"
+  integrity sha512-95QQjBl79E/GKNBg9hY3Vib4L25hBEPm4uOX1WA3hc2SJo0dFWn0hUMgtAnCeZdm1MYJQwvpBwTE1IwbuixPRA==
+
 react-native-pager-view@6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.3.0.tgz#7e734e84b1692f877591335373f6fd92f0d67aa6"

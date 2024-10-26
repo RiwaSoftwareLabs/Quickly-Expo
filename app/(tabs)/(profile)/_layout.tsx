@@ -22,6 +22,18 @@ export default function ProfileLayout() {
     >
       <Stack.Screen name="profile" options={{ headerShown: false }} />
       <Stack.Screen
+        name="editProfile"
+        options={{
+          header: () => (
+            <HeaderView
+              title={i18n.t("profile.editProfile")}
+              onPressBack={router.back}
+              pressBackTitle={i18n.t("common.goBack")}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
         name="(legal)"
         options={{
           header: () => (

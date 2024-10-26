@@ -27,7 +27,7 @@ const ProfileListElement: React.FC<ProfileElementProps> = ({
   return (
     <Pressable
       onPress={() => onValueChange(selectedValue)}
-      className={`flex-row items-center p-4 mb-0 ${
+      className={`flex-row items-center py-4 ${
         isRTL ? "flex-row-reverse" : ""
       }`}
     >
@@ -48,13 +48,16 @@ const ProfileListElement: React.FC<ProfileElementProps> = ({
             className={`flex-1 flex-row justify-between items-center ${
               isRTL ? "flex-row-reverse" : ""
             }`}
+            style={{
+              backgroundColor: getColor("surface")
+            }}
           >
             <ThemedText
               className={`text-md  ${isRTL ? "text-right" : "text-left"}`}
               style={{
                 color: getColor("text"),
                 fontFamily: "SFProTextMedium",
-                opacity: pressed ? 0.5 : 1,
+                opacity: pressed ? 0.5 : 1
               }}
             >
               {label}
@@ -63,6 +66,9 @@ const ProfileListElement: React.FC<ProfileElementProps> = ({
           {/* Right (or left in RTL) icon and selected value */}
           <ThemedView
             className={`flex-row items-center ${isRTL ? "flex-row-reverse" : ""}`}
+            style={{
+              backgroundColor: getColor("surface")
+            }}
           >
             <ThemedText
               className={`text-sm ${isRTL ? "ml-2" : "mr-2"}`}

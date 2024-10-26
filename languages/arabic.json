@@ -4,6 +4,7 @@
     "email": "البريد الإلكتروني",
     "mobile": "الهاتف",
     "gender": "الجنسية",
+    "dob": "تاريخ الميلاد",
     "nationality": "الجنسية",
     "residence": "المنصب",
     "city": "المدينة",
@@ -82,7 +83,10 @@
     "chooseAppearance": "اختر المظهر",
     "dark": "داكن",
     "light": "فاتح",
-    "locale": "العربية"
+    "locale": "العربية",
+    "editProfile": "تعديل الملف الشخصي",
+    "updateProfile": "تحديث الملف الشخصي",
+    "updateSuccess": "تم تحديث الملف الشخصي بنجاح"
   },
   "legal": {
     "title": "القوانين",
@@ -101,7 +105,10 @@
     "goBack": "العودة",
     "loading": "جاري التحميل...",
     "noData": "لا يوجد بيانات",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "error": "خطأ",
+    "success": "نجاح",
+    "unknownError": "حدث خطأ غير معروف"
   },
   "help": {
     "title": "المساعدة",

@@ -22,12 +22,18 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { ICountry } from "react-native-international-phone-number";
 import GenderInput from "@/components/inputs/GenderInput";
 import { Ionicons } from "@expo/vector-icons";
+import OTPView from "@/components/OTPView";
 
 interface RegisterFormData {
   fullName: string;
   email: string;
   mobile: string;
-  countryCode: string;
+  country: {
+    callingCode: string;
+    cca2: string;
+    flag: string;
+    name: any;
+  };
   gender: string;
   dob: Date;
   password: string;
@@ -45,7 +51,7 @@ const AuthForm: React.FC<{
   onPasswordReset: (email: string) => void;
   onOTPVerify: (email: string, otp: string) => void;
   onResendOTP: (email: string) => void;
-}> = ({ onRegister, onLogin, onPasswordReset, onOTPVerify, onResendOTP }) => {
+}> = ({ onRegister, onLogin, onPasswordReset, onOTPVerify, onResendOTP}) => {
   const [formType, setFormType] = useState<"login" | "register" | "reset">(
     "login"
   );
@@ -53,7 +59,7 @@ const AuthForm: React.FC<{
     fullName: "",
     email: "",
     mobile: "",
-    countryCode: "",
+    country: { callingCode: "", cca2: "", flag: "", name: {} as any },
     gender: "",
     dob: new Date(),
     password: "",
@@ -101,8 +107,7 @@ const AuthForm: React.FC<{
       formData.password,
       formData.confirmPassword,
       formData.dob,
-      formData.gender,
-      formData.countryCode as any
+      formData.gender
     );
 
     if (Object.keys(validationErrors).length === 0) {
@@ -176,7 +181,11 @@ const AuthForm: React.FC<{
   };
 
   const setCountryCode = (country: ICountry) => {
-    setFormData((prev) => ({ ...prev, countryCode: country.callingCode }));
+    setFormData((prev) => ({
+      ...prev,
+      countryCode: country.callingCode,
+      dialCode: country.cca2,
+    }));
   };
 
   return (
@@ -197,69 +206,30 @@ const AuthForm: React.FC<{
         keyboardShouldPersistTaps="handled"
       >
         <ThemedView className="flex-1 justify-center p-4">
-          <ThemedText
-            className={`text-3xl font-bold mb-6 ${isRTL ? "text-right" : "text-left"}`}
-            style={{ color: getColor("text") }}
-          >
-            {formType === "login"
-              ? i18n.t("auth.login")
-              : formType === "register"
-                ? i18n.t("auth.register")
-                : i18n.t("auth.resetPassword")}
-          </ThemedText>
-
           {showOTPForm ? (
             <ThemedView className="items-center">
-              <ThemedText className="text-2xl font-bold text-center mb-4">
-                {i18n.t("auth.verifyOTP")}
-              </ThemedText>
-              <TextInput
-                placeholder={i18n.t("auth.enterOTP")}
-                value={otp}
-                onChangeText={setOTP}
-                keyboardType="number-pad"
-                maxLength={6}
-                className="border p-3 rounded-md mb-2 w-full"
-                style={{ borderColor: getColor("border") }}
+              <OTPView
+                otp={otp}
+                setOtp={setOTP}
+                handleVerifyOtp={handleOTPVerify}
+                handleResendOtp={handleResendOTP}
+                verifyLoading={verifyOTPLoading}
+                resendLoading={resendOTPLoading}
               />
-              {errors.otp && (
-                <ThemedText className="text-red-500 mb-2">
-                  {errors.otp}
-                </ThemedText>
-              )}
-              <Pressable
-                onPress={handleOTPVerify}
-                className="bg-black rounded-lg p-3 shadow-lg mt-4 w-full"
-                style={{ backgroundColor: getColor("primary") }}
-                disabled={verifyOTPLoading}
-              >
-                {verifyOTPLoading ? (
-                  <ActivityIndicator color={getColor("secondary")} />
-                ) : (
-                  <ThemedText className="text-center text-white">
-                    {i18n.t("auth.verifyOTP")}
-                  </ThemedText>
-                )}
-              </Pressable>
-              <Pressable
-                onPress={handleResendOTP}
-                className="mt-4"
-                disabled={resendOTPLoading}
-              >
-                {resendOTPLoading ? (
-                  <ActivityIndicator color={getColor("primary")} />
-                ) : (
-                  <ThemedText
-                    className="text-center"
-                    style={{ color: getColor("primary") }}
-                  >
-                    {i18n.t("auth.resendOTP")}
-                  </ThemedText>
-                )}
-              </Pressable>
             </ThemedView>
           ) : (
             <>
+              <ThemedText
+                className={`text-3xl font-bold mb-6 ${isRTL ? "text-right" : "text-left"}`}
+                style={{ color: getColor("text") }}
+              >
+                {formType === "login"
+                  ? i18n.t("auth.login")
+                  : formType === "register"
+                    ? i18n.t("auth.register")
+                    : i18n.t("auth.resetPassword")}
+              </ThemedText>
+
               {formType === "login" && (
                 <>
                   <TextInput
@@ -373,6 +343,7 @@ const AuthForm: React.FC<{
                       value={formData.mobile}
                       onChangeMobile={(text) => onChangeInput("mobile", text)}
                       setCountryCode={setCountryCode}
+                      defaultCountry={formData.country}
                     />
                   </ThemedView>
                   {errors.mobile && (

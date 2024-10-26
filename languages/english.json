@@ -4,6 +4,7 @@
     "email": "Email",
     "mobile": "Mobile",
     "gender": "Gender",
+    "dob": "Date of Birth",
     "nationality": "Nationality",
     "residence": "Residence",
     "city": "City",
@@ -83,7 +84,10 @@
     "chooseAppearance": "Choose Appearance",
     "dark": "Dark",
     "light": "Light",
-    "locale": "English"
+    "locale": "English",
+    "editProfile": "Edit Profile",
+    "updateProfile": "Update Profile",
+    "updateSuccess": "Profile updated successfully"
   },
   "legal": {
     "title": "Legal",
@@ -102,7 +106,10 @@
     "goBack": "Back",
     "loading": "Loading...",
     "noData": "No data",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "error": "Error",
+    "success": "Success",
+    "unknownError": "An unknown error occurred"
   },
   "help": {
     "title": "Help",

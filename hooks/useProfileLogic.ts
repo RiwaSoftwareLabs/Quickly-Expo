@@ -10,6 +10,7 @@ interface RegisterFormData {
   email: string;
   mobile: string;
   countryCode: string;
+  dialCode: string;
   gender: string;
   dob: Date;
   password: string;
@@ -64,6 +65,7 @@ export const useProfileLogic = () => {
             full_name: data.fullName,
             mobile: data.mobile,
             country_code: data.countryCode,
+            dial_code: data.dialCode,
             gender: data.gender,
             dob: data.dob.toISOString()
           },
@@ -139,8 +141,6 @@ export const useProfileLogic = () => {
   };
 
   const handleOTPVerify = async (email: string, otp: string) => {
-    console.log(email);
-    console.log(otp);
     try {
       const { error } = await supabase.auth.verifyOtp({
         email: email,

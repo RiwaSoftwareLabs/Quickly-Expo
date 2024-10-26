@@ -7,6 +7,7 @@ interface MobileInputProps {
   value: string;
   onChangeMobile: (phone: string) => void;
   setCountryCode: (country: ICountry) => void;
+  defaultCountry: ICountry;
 }
 
 const MobileInput: React.FC<MobileInputProps> = ({
@@ -14,8 +15,11 @@ const MobileInput: React.FC<MobileInputProps> = ({
   value,
   onChangeMobile,
   setCountryCode,
+  defaultCountry,
 }) => {
-  const [selectedCountry, setSelectedCountry] = useState<null | ICountry>(null);
+  const [selectedCountry, setSelectedCountry] = useState<null | ICountry>(
+    defaultCountry || null
+  );
   const { getColor } = useThemeColor();
 
   const handleInputValue = (phoneNumber: string) => {
@@ -23,19 +27,21 @@ const MobileInput: React.FC<MobileInputProps> = ({
   };
 
   const handleSelectedCountry = (country: ICountry) => {
-    setCountryCode(country);
-    setSelectedCountry(country);
+    if (country.cca2 !== selectedCountry?.cca2) {
+      setCountryCode(country);
+      setSelectedCountry(country);
+    }
   };
 
   return (
     <PhoneInput
       value={value}
-      onChangePhoneNumber={handleInputValue}
+      onChangePhoneNumber={(phoneNumber) => handleInputValue(phoneNumber)}
       selectedCountry={selectedCountry}
       onChangeSelectedCountry={handleSelectedCountry}
       placeholder={placeHolder}
       modalHeight="90%"
-      defaultCountry="AE"
+      defaultCountry={defaultCountry?.cca2 as any || "AE"}
       phoneInputStyles={{
         container: {
           borderWidth: 1,

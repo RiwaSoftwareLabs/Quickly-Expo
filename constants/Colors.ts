@@ -34,7 +34,7 @@ export const Colors = {
     border: "#FFFFFF",
     disabled: "#333333",
     discount: "#FF0000",
-    surface: "#151718",
+    surface: "#2C2C2E",
     negative: "#FF0000",
     positive: "#00FF00",
     gray: "#9BA1A6",
