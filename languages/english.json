@@ -1,4 +1,32 @@
 {
+  "auth": {
+    "fullName": "Full Name",
+    "email": "Email",
+    "mobile": "Mobile",
+    "gender": "Gender",
+    "nationality": "Nationality",
+    "residence": "Residence",
+    "city": "City",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "haveAccount": "Already have an account?",
+    "register": "Register",
+    "login": "Login",
+    "reset": "Reset Password",
+    "backToLogin": "Back to Login",
+    "noAccount": "Don't have an account?",
+    "forgotPassword": "Forgot Password?",
+    "male": "Male",
+    "female": "Female",
+    "verifyOTP": "Verify OTP",
+    "enterOTP": "Enter OTP",
+    "resendOTP": "Resend OTP",
+    "logout": "Logout",
+    "logoutConfirmTitle": "Logout Confirmation",
+    "logoutConfirmMessage": "Are you sure you want to logout?",
+    "resetPassword": "Reset Password",
+    "enterEmail": "Enter Email"
+  },
   "name": "Mega Deals",
   "CFBundleDisplayName": "Mega Deals",
   "home": {
@@ -57,10 +85,6 @@
     "light": "Light",
     "locale": "English"
   },
-  "news": {
-    "title": "News",
-    "publishedOn": "Published on"
-  },
   "legal": {
     "title": "Legal",
     "termsAndConditions": "Terms and Conditions",
@@ -77,14 +101,11 @@
     "ok": "Ok",
     "goBack": "Back",
     "loading": "Loading...",
-    "noData": "No data"
-  },
-  "csr": {
-    "title": "CSR",
-    "downloadReport": "Download Report"
+    "noData": "No data",
+    "cancel": "Cancel"
   },
   "help": {
-    "title": "Contact",
+    "title": "Help",
     "followUs": "Follow Us"
   }
 }

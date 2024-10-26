@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "quickly",
-    "slug": "quickly",
+    "slug": "quickly-expo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["assets/images/*"],
+    "assetBundlePatterns": [
+      "assets/images/*"
+    ],
     "ios": {
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true
@@ -29,19 +31,23 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "server", // static
+      "output": "server",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": ["expo-router", "expo-localization", "expo-secure-store"],
+    "plugins": [
+      "expo-router",
+      "expo-localization",
+      "expo-secure-store"
+    ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
       "eas": {
-        "projectId": "2f59704e-de6b-4c1f-9044-22f7aee73a40"
+        "projectId": "9e0ff8ef-b999-459d-91cb-f5826843ba38"
       }
     },
-    "owner": "tycheros",
+    "owner": "riwasoftwarelabs",
     "locales": {
       "en": "./languages/english.json",
       "ar": "./languages/arabic.json"

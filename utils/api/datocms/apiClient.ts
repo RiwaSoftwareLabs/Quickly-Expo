@@ -1,5 +1,5 @@
 const API_URL = "https://graphql.datocms.com/";
-const AUTH_TOKEN = "ed480834da27025dfe3a7a41933e19"; // Store securely
+const AUTH_TOKEN = "5f63927177c9cd40681cbbdd9582a7"; // Store securely
 
 export const fetchFromDatoCMS = async (query: string) => {
   try {

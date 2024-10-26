@@ -3,6 +3,7 @@ import { Pressable, Modal, Button } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const DateOfBirthPicker: React.FC<{
   dob: Date | undefined;
@@ -30,9 +31,15 @@ const DateOfBirthPicker: React.FC<{
     setShowDatePicker(false);
   };
 
+  const { getColor } = useThemeColor();
+
   return (
     <ThemedView>
-      <Pressable onPress={() => setShowDatePicker(true)}>
+      <Pressable
+        onPress={() => setShowDatePicker(true)}
+        className="border p-2.5 rounded-md mb-2"
+        style={{ borderColor: getColor("border") }}
+      >
         <ThemedText className="text-gray-700">
           {dob ? dob.toLocaleDateString() : "Select Date of Birth"}
         </ThemedText>

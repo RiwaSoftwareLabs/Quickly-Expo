@@ -1,13 +1,14 @@
-import axios from "axios";
+import { createClient } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const apiClient = axios.create({
-  baseURL: "https://q-server-dev.up.railway.app", // Replace with your API base URL : https://megadeals-server-dev.up.railway.app
-  timeout: 5000,
-  headers: {
-    "Content-Type": "application/json",
-    "x-publishable-api-key":
-      "pk_46dc7e2428ecf1e3015208fc484865d9355303f0815c3de04113c57f830ee1c8", // pk_135fe7d370320458adc8c4a8bb0c4a31796b1e331b83be57ce09ad21d6252a79
+const supabaseUrl = 'https://opdtmbvzevkunhuxvlbn.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wZHRtYnZ6ZXZrdW5odXh2bGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxODA1ODAsImV4cCI6MjA0NDc1NjU4MH0.YImP-g7sTnWMbQSwZ3A35MZ6wSCtbOdfnRS9sSZGu3M';
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
   },
 });
-
-export default apiClient;

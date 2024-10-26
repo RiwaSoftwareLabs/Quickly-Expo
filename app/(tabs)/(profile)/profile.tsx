@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, Alert } from "react-native";
 import { router } from "expo-router";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import ProfileListElement from "@/components/elements/ProfileListElement";
@@ -13,6 +13,7 @@ const ProfileScreen: React.FC = () => {
   const { getColor, toggleTheme, theme } = useThemeColor();
   const {
     isLoggedIn,
+    user,
     locale,
     selectedCurrency,
     currencyModalVisible,
@@ -22,6 +23,9 @@ const ProfileScreen: React.FC = () => {
     handleRegister,
     handleLogin,
     handlePasswordReset,
+    handleOTPVerify,
+    handleLogout,
+    resendOTP,
     i18n,
   } = useProfileLogic();
 
@@ -29,9 +33,9 @@ const ProfileScreen: React.FC = () => {
     <ThemedView style={{ flex: 1 }}>
       <ThemedView className="w-full items-center pt-5">
         <ProfileAvatar
-          imageUri="https://via.placeholder.com/100"
-          name="BAYC"
-          email="abdul@tycheros.net"
+          imageUri={user?.user_metadata?.avatar_url || "https://via.placeholder.com/100"}
+          name={user?.user_metadata?.full_name || "User"}
+          email={user?.email || ""}
         />
       </ThemedView>
       <ThemedView className="mt-6 w-full flex-1">
@@ -59,25 +63,11 @@ const ProfileScreen: React.FC = () => {
           onValueChange={toggleTheme}
         />
         <ProfileListElement
-          leftIcon={theme === "dark" ? "newspaper" : "newspaper-outline"}
-          rightIcon="chevron-forward"
-          label={i18n.t("news.title")}
-          selectedValue={""}
-          onValueChange={() => router.push("/(tabs)/(news)/news")}
-        />
-        <ProfileListElement
           leftIcon={theme === "dark" ? "book" : "book-outline"}
           rightIcon="chevron-forward"
           label={i18n.t("legal.title")}
           selectedValue={""}
           onValueChange={() => router.push("/(tabs)/(legal)/legal")}
-        />
-        <ProfileListElement
-          leftIcon={theme === "dark" ? "document" : "document-outline"}
-          rightIcon="chevron-forward"
-          label={i18n.t("csr.title")}
-          selectedValue={""}
-          onValueChange={() => router.push("/(tabs)/(profile)/csr")}
         />
         <ProfileListElement
           leftIcon={theme === "dark" ? "help-circle" : "help-circle-outline"}
@@ -104,9 +94,18 @@ const ProfileScreen: React.FC = () => {
           selectedValue={""}
           onValueChange={() => router.push("/(tabs)/(profile)/help")}
         />
+        <ProfileListElement
+          leftIcon={theme === "dark" ? "log-out" : "log-out-outline"}
+          rightIcon="chevron-forward"
+          label={i18n.t("auth.logout")}
+          selectedValue={""}
+          onValueChange={handleLogout}
+        />
       </ThemedView>
     </ThemedView>
   );
+
+  console.log(isLoggedIn);
 
   return (
     <ScrollView
@@ -122,6 +121,8 @@ const ProfileScreen: React.FC = () => {
           onRegister={handleRegister}
           onLogin={handleLogin}
           onPasswordReset={handlePasswordReset}
+          onOTPVerify={handleOTPVerify}
+          onResendOTP={resendOTP}
         />
       )}
       <CurrencyModal

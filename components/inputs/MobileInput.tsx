@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PhoneInput, { ICountry } from "react-native-international-phone-number";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 interface MobileInputProps {
   placeHolder: string;
@@ -15,6 +16,7 @@ const MobileInput: React.FC<MobileInputProps> = ({
   setCountryCode,
 }) => {
   const [selectedCountry, setSelectedCountry] = useState<null | ICountry>(null);
+  const { getColor } = useThemeColor();
 
   const handleInputValue = (phoneNumber: string) => {
     onChangeMobile(phoneNumber);
@@ -33,14 +35,13 @@ const MobileInput: React.FC<MobileInputProps> = ({
       onChangeSelectedCountry={handleSelectedCountry}
       placeholder={placeHolder}
       modalHeight="90%"
-      defaultCountry="QA"
+      defaultCountry="AE"
       phoneInputStyles={{
         container: {
           borderWidth: 1,
-          borderStyle: "solid",
-          borderColor: "black",
+          borderColor: getColor("border"),
           borderRadius: 5,
-          height: 35,
+          height: 45,
           width: "100%",
         },
         flagContainer: {

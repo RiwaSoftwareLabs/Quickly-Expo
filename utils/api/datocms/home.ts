@@ -31,8 +31,7 @@ export const loadHehroSlidersFromDatoCMS = async (locale: string) => {
               base64
             }
           },
-          gameId,
-          webLink
+          productId
         }
       }
     }

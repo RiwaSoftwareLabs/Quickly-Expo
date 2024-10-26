@@ -1,257 +1,182 @@
 import React, { useState } from "react";
-import { Checkbox } from "expo-checkbox";
 import {
   TextInput,
   Pressable,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
+  View,
 } from "react-native";
-import { ICountry } from "react-native-international-phone-number";
-import DateOfBirthPicker from "@/components/inputs/DateTimePicker";
-import MobileInput from "@/components/inputs/MobileInput";
-import { Ionicons } from "@expo/vector-icons";
 import {
-  validateField,
-  validateStep1,
-  validateStep2,
   validateLogin,
+  validateRegister,
+  validatePasswordReset,
 } from "@/utils/validation";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import DateOfBirthPicker from "@/components/inputs/DateTimePicker";
+import MobileInput from "@/components/inputs/MobileInput";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { ICountry } from "react-native-international-phone-number";
+import GenderInput from "@/components/inputs/GenderInput";
+import { Ionicons } from "@expo/vector-icons";
 
-interface AdditionalParams {
-  password?: string;
-  countryCode?: string;
-}
-
-interface FormData {
+interface RegisterFormData {
   fullName: string;
   email: string;
   mobile: string;
   countryCode: string;
   gender: string;
-  dob?: Date;
-  nationality: string;
-  residence: string;
-  city: string;
+  dob: Date;
   password: string;
   confirmPassword: string;
-  isPasswordVisible: boolean;
-  isConfirmPasswordVisible: boolean;
-  subscribeNews: boolean;
-  loginEmail: string;
-  loginMobile: string;
-  loginPassword: string;
-  resetEmail: string;
+}
+
+interface LoginFormData {
+  email: string;
+  password: string;
 }
 
 const AuthForm: React.FC<{
-  onRegister: (data: any) => void;
-  onLogin: (data: any) => void;
+  onRegister: (data: RegisterFormData) => void;
+  onLogin: (data: LoginFormData) => void;
   onPasswordReset: (email: string) => void;
-}> = ({ onRegister, onLogin, onPasswordReset }) => {
-  const [isEmailSignUp, setIsEmailSignUp] = useState(true);
-  const [step, setStep] = useState(1);
-  const [country, setCountry] = useState<ICountry | null>(null);
-  const [formData, setFormData] = useState<FormData>({
+  onOTPVerify: (email: string, otp: string) => void;
+  onResendOTP: (email: string) => void;
+}> = ({ onRegister, onLogin, onPasswordReset, onOTPVerify, onResendOTP }) => {
+  const [formType, setFormType] = useState<"login" | "register" | "reset">(
+    "login"
+  );
+  const [formData, setFormData] = useState<RegisterFormData>({
     fullName: "",
     email: "",
     mobile: "",
     countryCode: "",
     gender: "",
-    dob: undefined,
-    nationality: "",
-    residence: "",
-    city: "",
+    dob: new Date(),
     password: "",
     confirmPassword: "",
-    isPasswordVisible: false,
-    isConfirmPasswordVisible: false,
-    subscribeNews: false,
-    loginEmail: "",
-    loginMobile: "",
-    loginPassword: "",
-    resetEmail: "",
   });
-  // Step 1 Error States
-  const [errorsStep1, setErrorsStep1] = useState<{
-    [key: string]: string | undefined;
-  }>({});
-  // Step 2 Error States
-  const [errorsStep2, setErrorsStep2] = useState<{
-    [key: string]: string | undefined;
-  }>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const { getColor } = useThemeColor();
+  const { i18n, locale, changeLanguage, isRTL } = useLanguage();
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [showOTPForm, setShowOTPForm] = useState(false);
+  const [otp, setOTP] = useState("");
+  const [verifyOTPLoading, setVerifyOTPLoading] = useState(false);
+  const [resendOTPLoading, setResendOTPLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [showLogin, setShowLogin] = useState(false);
-  const [isLoginWithEmail, setIsLoginWithEmail] = useState(true);
-  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const handleLogin = async () => {
+    const validationErrors = validateLogin(formData.email, formData.password);
+    if (Object.keys(validationErrors).length === 0) {
+      setErrors({});
+      setLoginLoading(true);
+      try {
+        const response = await onLogin({
+          email: formData.email,
+          password: formData.password,
+        });
+        setErrors({ api: "Invalid login credentials." });
+      } catch (error) {
+        setErrors({ api: "An unexpected error occurred. Please try again." });
+      } finally {
+        setLoginLoading(false);
+      }
+    } else {
+      setErrors(validationErrors);
+    }
+  };
 
-  // Login Error States
-  const [errorsLogin, setErrorsLogin] = useState<{ [key: string]: string }>({});
+  const handleRegister = async () => {
+    const validationErrors = validateRegister(
+      formData.fullName,
+      formData.email,
+      formData.mobile,
+      formData.password,
+      formData.confirmPassword,
+      formData.dob,
+      formData.gender,
+      formData.countryCode as any
+    );
 
-  const onChangeInput = (
-    key: keyof FormData,
-    value: string | boolean | Date | undefined,
-  ) => {
+    if (Object.keys(validationErrors).length === 0) {
+      setErrors({});
+      setRegisterLoading(true);
+      try {
+        await onRegister(formData);
+        setShowOTPForm(true); // Show OTP form after successful registration
+      } catch (error) {
+        if (error instanceof Error) {
+          setErrors({ api: error.message });
+        } else {
+          setErrors({ api: "An unknown error occurred" });
+        }
+      } finally {
+        setRegisterLoading(false);
+      }
+    } else {
+      setErrors(validationErrors);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    const validationErrors = validatePasswordReset(formData.email);
+    if (Object.keys(validationErrors).length === 0) {
+      setErrors({});
+      setResetLoading(true);
+      try {
+        await onPasswordReset(formData.email);
+        setFormType("login");
+      } finally {
+        setResetLoading(false);
+      }
+    } else {
+      setErrors(validationErrors);
+    }
+  };
+
+  const handleOTPVerify = async () => {
+    if (otp.length === 6) {
+      setVerifyOTPLoading(true);
+      try {
+        await onOTPVerify(formData.email, otp);
+        setFormType("login");
+      } catch (error) {
+        console.error("OTP verification failed:", error);
+        setErrors({ otp: "OTP verification failed. Please try again." });
+      } finally {
+        setVerifyOTPLoading(false);
+      }
+    } else {
+      setErrors({ otp: "Please enter a valid 6-digit OTP" });
+    }
+  };
+
+  const handleResendOTP = async () => {
+    setResendOTPLoading(true);
+    try {
+      await onResendOTP(formData.email);
+      // You might want to show a success message here
+    } catch (error) {
+      console.error("Resending OTP failed:", error);
+      // You might want to show an error message here
+    } finally {
+      setResendOTPLoading(false);
+    }
+  };
+
+  const onChangeInput = (key: keyof RegisterFormData, value: string | Date) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
-    if (value === null || value === undefined) {
-      setErrorsStep1((prev) => {
-        const { [key]: _, ...rest } = prev;
-        return rest;
-      });
-      setErrorsStep2((prev) => {
-        const { [key]: _, ...rest } = prev;
-        return rest;
-      });
-      return;
-    }
-    const additionalParams: AdditionalParams = {};
-    if (key === "confirmPassword")
-      additionalParams.password = formData.password;
-    if (key === "mobile") additionalParams.countryCode = country?.cca2;
-    const error = validateField(key, value, false, additionalParams);
-    if (isEmailSignUp) {
-      if (key === "mobile") return;
-    } else {
-      if (key === "email") return;
-    }
-    const setErrors = [
-      "email",
-      "mobile",
-      "password",
-      "confirmPassword",
-    ].includes(key)
-      ? setErrorsStep1
-      : setErrorsStep2;
-    setErrors((prev) => {
-      const newErrors = {
-        ...prev,
-        [key]: error || undefined,
-      };
-      return Object.fromEntries(
-        Object.entries(newErrors).filter(([_, v]) => v !== undefined),
-      );
-    });
   };
 
-  const handleNextStep = () => {
-    const validationErrors: { [key: string]: string } = {};
-    const additionalParams: AdditionalParams = {};
-    const keysToValidate = isEmailSignUp
-      ? ["email", "password", "confirmPassword"]
-      : ["mobile", "password", "confirmPassword"];
-    keysToValidate.forEach((key) => {
-      if (key === "confirmPassword")
-        additionalParams.password = formData.password;
-      if (key === "mobile") additionalParams.countryCode = country?.cca2;
-      const value = formData[key as keyof FormData];
-      const error = validateField(
-        key as keyof FormData,
-        value,
-        true,
-        additionalParams,
-      );
-      if (error) {
-        validationErrors[key] = error;
-      }
-    });
-    if (Object.keys(validationErrors).length === 0) {
-      setErrorsStep1({});
-      setStep(2);
-    } else {
-      setErrorsStep1(validationErrors);
-    }
-  };
-
-  const handleSubmit = () => {
-    const validationErrors: { [key: string]: string } = {};
-    const additionalParams: AdditionalParams = {};
-    const fieldsToValidate = [
-      "fullName",
-      "email",
-      "mobile",
-      "dob",
-      "gender",
-      "nationality",
-      "residence",
-      "city",
-    ];
-
-    fieldsToValidate.forEach((key) => {
-      const value = formData[key as keyof FormData];
-      if (key === "mobile") {
-        additionalParams.countryCode = country?.cca2;
-      }
-      const error = validateField(
-        key as keyof FormData,
-        value,
-        true,
-        additionalParams,
-      );
-      if (error) {
-        validationErrors[key] = error;
-      }
-    });
-
-    if (Object.keys(validationErrors).length === 0) {
-      setErrorsStep2({});
-      const registrationData = {
-        fullName: formData.fullName,
-        email: isEmailSignUp ? formData.email : undefined,
-        mobile: !isEmailSignUp ? formData.mobile : undefined,
-        gender: formData.gender,
-        dob: formData.dob,
-        nationality: formData.nationality,
-        residence: formData.residence,
-        city: formData.city,
-        subscribeNews: formData.subscribeNews,
-      };
-      onRegister(registrationData);
-    } else {
-      setErrorsStep2(validationErrors);
-    }
-  };
-
-  const handleLogin = () => {
-    let validationErrors;
-    if (isLoginWithEmail) {
-      // Validate only email and password for email login
-      validationErrors = validateLogin(
-        formData.loginEmail,
-        "",
-        formData.loginPassword,
-        isLoginWithEmail,
-      ); // Pass empty string for mobile
-    } else {
-      // Validate only mobile and password for mobile login
-      validationErrors = validateLogin(
-        "",
-        formData.loginMobile,
-        formData.loginPassword,
-        isLoginWithEmail,
-      ); // Pass empty string for email
-    }
-    if (Object.keys(validationErrors).length === 0) {
-      // If no errors, proceed with login logic
-      setErrorsLogin({});
-      // Call API or handle the login process
-      console.log("Login successful");
-    } else {
-      // If there are validation errors, set them to the state
-      setErrorsLogin(validationErrors);
-    }
-  };
-
-  const handlePasswordReset = () => {
-    onPasswordReset(formData.resetEmail);
-    setIsResettingPassword(false); // Return to login after resetting
-  };
-
-  const handleToggleSignUp = (type: "email" | "mobile") => {
-    setErrorsStep1({});
-    setIsEmailSignUp(type === "email");
-    onChangeInput(type, ""); // This will clear the email or mobile field based on the type
+  const setCountryCode = (country: ICountry) => {
+    setFormData((prev) => ({ ...prev, countryCode: country.callingCode }));
   };
 
   return (
@@ -260,504 +185,339 @@ const AuthForm: React.FC<{
       className="flex-1"
       keyboardVerticalOffset={80}
     >
-      <ThemedView className="flex-1 justify-center">
-        <ThemedView className="bg-white rounded-lg shadow-lg p-3">
-          <ThemedView className="items-center p-4">
-            <ThemedText className="text-2xl font-bold text-center mb-4">
-              Mega Deals
-            </ThemedText>
-          </ThemedView>
-          {isResettingPassword ? (
-            <>
-              <TextInput
-                placeholder="Enter your email"
-                value={formData.resetEmail}
-                onChangeText={(text) => onChangeInput("resetEmail", text)}
-                className="border p-2 mb-2 rounded-md"
-              />
-              <Pressable
-                onPress={handlePasswordReset}
-                className="bg-black rounded-lg p-3 shadow-lg mt-4"
-              >
-                <ThemedText className="text-center text-white">
-                  Reset Password
-                </ThemedText>
-              </Pressable>
-              <ThemedText
-                className="text-center mt-4 text-black font-bold"
-                onPress={() => setIsResettingPassword(false)}
-              >
-                Back to Login
-              </ThemedText>
-            </>
-          ) : showLogin ? (
-            <>
-              {/* Login Tabs */}
-              <ThemedView className="flex-row mb-4">
-                <Pressable
-                  className={`flex-1 p-3 rounded-lg ${
-                    isLoginWithEmail ? "bg-black" : "bg-gray-200"
-                  } mr-2`}
-                  onPress={() => setIsLoginWithEmail(true)}
-                >
-                  <ThemedText
-                    className={`text-center ${
-                      isLoginWithEmail ? "text-white" : "text-black"
-                    }`}
-                  >
-                    Login With Email
-                  </ThemedText>
-                </Pressable>
-                <Pressable
-                  className={`flex-1 p-3 rounded-lg ${
-                    !isLoginWithEmail ? "bg-black" : "bg-gray-200"
-                  }`}
-                  onPress={() => setIsLoginWithEmail(false)}
-                >
-                  <ThemedText
-                    className={`text-center ${
-                      !isLoginWithEmail ? "text-white" : "text-black"
-                    }`}
-                  >
-                    Login With Mobile
-                  </ThemedText>
-                </Pressable>
-              </ThemedView>
+      <ThemedView className="flex-row justify-end pt-10 mr-5">
+        <Pressable
+          onPress={() => changeLanguage(locale === "en" ? "ar" : "en")}
+        >
+          <Ionicons name="language" size={22} color={getColor("text")} />
+        </Pressable>
+      </ThemedView>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <ThemedView className="flex-1 justify-center p-4">
+          <ThemedText
+            className={`text-3xl font-bold mb-6 ${isRTL ? "text-right" : "text-left"}`}
+            style={{ color: getColor("text") }}
+          >
+            {formType === "login"
+              ? i18n.t("auth.login")
+              : formType === "register"
+                ? i18n.t("auth.register")
+                : i18n.t("auth.resetPassword")}
+          </ThemedText>
 
-              {/* Login Form */}
-              {isLoginWithEmail ? (
-                <ThemedView className="mb-2">
-                  <TextInput
-                    placeholder="Email"
-                    value={formData.loginEmail}
-                    onChangeText={(text) => onChangeInput("loginEmail", text)}
-                    className="border p-2  rounded-md"
-                  />
-                  {errorsLogin.email && (
-                    <ThemedText className="text-red-500 mt-1">
-                      {errorsLogin.email}
-                    </ThemedText>
-                  )}
-                </ThemedView>
-              ) : (
-                <ThemedView className="mb-2">
-                  <MobileInput
-                    placeHolder="Enter Mobile"
-                    value={formData.loginMobile}
-                    onChangeMobile={(text) =>
-                      onChangeInput("loginMobile", text)
-                    }
-                    setCountryCode={setCountry}
-                  />
-                  {errorsLogin.mobile && (
-                    <ThemedText className="text-red-500 mt-1">
-                      {errorsLogin.mobile}
-                    </ThemedText>
-                  )}
-                </ThemedView>
+          {showOTPForm ? (
+            <ThemedView className="items-center">
+              <ThemedText className="text-2xl font-bold text-center mb-4">
+                {i18n.t("auth.verifyOTP")}
+              </ThemedText>
+              <TextInput
+                placeholder={i18n.t("auth.enterOTP")}
+                value={otp}
+                onChangeText={setOTP}
+                keyboardType="number-pad"
+                maxLength={6}
+                className="border p-3 rounded-md mb-2 w-full"
+                style={{ borderColor: getColor("border") }}
+              />
+              {errors.otp && (
+                <ThemedText className="text-red-500 mb-2">
+                  {errors.otp}
+                </ThemedText>
               )}
-              <>
-                <ThemedView className="relative">
-                  <ThemedView className="mb-2">
-                    <TextInput
-                      placeholder="Password"
-                      value={formData.loginPassword}
-                      onChangeText={(text) => onChangeInput("password", text)}
-                      secureTextEntry={!formData.isPasswordVisible}
-                      className="border p-2 rounded-md"
-                    />
-                    {errorsLogin.password && (
-                      <ThemedText className="text-red-500 mt-1">
-                        {errorsLogin.password}
-                      </ThemedText>
-                    )}
-                  </ThemedView>
-                  <Pressable
-                    onPress={() =>
-                      onChangeInput(
-                        "isPasswordVisible",
-                        !formData.isPasswordVisible,
-                      )
-                    }
-                    className="absolute right-2 top-2"
-                  >
-                    <Ionicons
-                      name={formData.isPasswordVisible ? "eye-off" : "eye"}
-                      size={24}
-                      color="gray"
-                    />
-                  </Pressable>
-                </ThemedView>
-              </>
               <Pressable
-                onPress={handleLogin}
-                className="bg-black rounded-lg p-3 shadow-lg mt-4"
+                onPress={handleOTPVerify}
+                className="bg-black rounded-lg p-3 shadow-lg mt-4 w-full"
+                style={{ backgroundColor: getColor("primary") }}
+                disabled={verifyOTPLoading}
               >
-                <ThemedText className="text-center text-white">
-                  Login
-                </ThemedText>
+                {verifyOTPLoading ? (
+                  <ActivityIndicator color={getColor("secondary")} />
+                ) : (
+                  <ThemedText className="text-center text-white">
+                    {i18n.t("auth.verifyOTP")}
+                  </ThemedText>
+                )}
               </Pressable>
-              <ThemedText className="text-center mt-4">
-                Forgot Password?{" "}
-                <ThemedText
-                  className="text-black font-bold"
-                  onPress={() => setIsResettingPassword(true)}
-                >
-                  Reset
-                </ThemedText>
-              </ThemedText>
-              <ThemedText className="text-center mt-4">
-                Don't have an account?{" "}
-                <ThemedText
-                  className="text-black font-bold"
-                  onPress={() => setShowLogin(false)}
-                >
-                  Register
-                </ThemedText>
-              </ThemedText>
-            </>
+              <Pressable
+                onPress={handleResendOTP}
+                className="mt-4"
+                disabled={resendOTPLoading}
+              >
+                {resendOTPLoading ? (
+                  <ActivityIndicator color={getColor("primary")} />
+                ) : (
+                  <ThemedText
+                    className="text-center"
+                    style={{ color: getColor("primary") }}
+                  >
+                    {i18n.t("auth.resendOTP")}
+                  </ThemedText>
+                )}
+              </Pressable>
+            </ThemedView>
           ) : (
             <>
-              {/* Registration Tabs */}
-              {step === 1 && (
-                <ThemedView className="flex-row mb-4">
-                  <Pressable
-                    className={`flex-1 p-3 rounded-lg ${
-                      isEmailSignUp ? "bg-black" : "bg-gray-200"
-                    } mr-2`}
-                    onPress={() => handleToggleSignUp("email")}
-                  >
-                    <ThemedText
-                      className={`text-center ${
-                        isEmailSignUp ? "text-white" : "text-black"
-                      }`}
-                    >
-                      Sign Up With Email
-                    </ThemedText>
-                  </Pressable>
-                  <Pressable
-                    className={`flex-1 p-3 rounded-lg ${
-                      !isEmailSignUp ? "bg-black" : "bg-gray-200"
-                    }`}
-                    onPress={() => handleToggleSignUp("mobile")}
-                  >
-                    <ThemedText
-                      className={`text-center ${
-                        !isEmailSignUp ? "text-white" : "text-black"
-                      }`}
-                    >
-                      Sign Up With Mobile
-                    </ThemedText>
-                  </Pressable>
-                </ThemedView>
-              )}
-              {step === 1 ? (
+              {formType === "login" && (
                 <>
-                  {/* Step 1: Email/Mobile & Password */}
-                  <ScrollView>
-                    {isEmailSignUp ? (
-                      <ThemedView className="mb-2">
-                        <TextInput
-                          placeholder="Email"
-                          value={formData.email}
-                          // onChangeText={setEmail}
-                          onChangeText={(text) => onChangeInput("email", text)}
-                          className="border p-2 rounded-md"
-                        />
-                        {errorsStep1.email && (
-                          <ThemedText className="text-red-500 mt-1">
-                            {errorsStep1.email}
-                          </ThemedText>
-                        )}
-                      </ThemedView>
-                    ) : (
-                      <>
-                        <ThemedView className="mb-2">
-                          <MobileInput
-                            placeHolder="Enter Mobile"
-                            value={formData.mobile}
-                            onChangeMobile={(text) =>
-                              onChangeInput("mobile", text)
-                            }
-                            setCountryCode={setCountry}
-                          />
-                          {errorsStep1.mobile && (
-                            <ThemedText className="text-red-500 mt-1">
-                              {errorsStep1.mobile}
-                            </ThemedText>
-                          )}
-                        </ThemedView>
-                      </>
-                    )}
-                    <>
-                      <ThemedView className="relative">
-                        <ThemedView className="mb-2">
-                          <TextInput
-                            placeholder="Password"
-                            value={formData.password}
-                            onChangeText={(text) =>
-                              onChangeInput("password", text)
-                            }
-                            secureTextEntry={!formData.isPasswordVisible}
-                            className="border p-2 rounded-md"
-                          />
-                          {errorsStep1.password && (
-                            <ThemedText className="text-red-500 mt-1">
-                              {errorsStep1.password}
-                            </ThemedText>
-                          )}
-                        </ThemedView>
-                        <Pressable
-                          onPress={() =>
-                            onChangeInput(
-                              "isPasswordVisible",
-                              !formData.isPasswordVisible,
-                            )
-                          }
-                          className="absolute right-2 top-2"
-                        >
-                          <Ionicons
-                            name={
-                              formData.isPasswordVisible ? "eye-off" : "eye"
-                            }
-                            size={24}
-                            color="gray"
-                          />
-                        </Pressable>
-                      </ThemedView>
-                    </>
-                    <ThemedView className="relative">
-                      <TextInput
-                        placeholder="Confirm Password"
-                        value={formData.confirmPassword}
-                        onChangeText={(text) =>
-                          onChangeInput("confirmPassword", text)
-                        }
-                        secureTextEntry={!formData.isConfirmPasswordVisible}
-                        className="border p-2 rounded-md"
-                      />
-                      {errorsStep1.confirmPassword && (
-                        <ThemedText className="text-red-500 mt-1">
-                          {errorsStep1.confirmPassword}
-                        </ThemedText>
-                      )}
-                      <Pressable
-                        onPress={() =>
-                          onChangeInput(
-                            "isConfirmPasswordVisible",
-                            !formData.isConfirmPasswordVisible,
-                          )
-                        }
-                        className="absolute right-2 top-2"
-                      >
-                        <Ionicons
-                          name={
-                            formData.isConfirmPasswordVisible
-                              ? "eye-off"
-                              : "eye"
-                          }
-                          size={24}
-                          color="gray"
-                        />
-                      </Pressable>
-                    </ThemedView>
-                    <ThemedView className="mt-2">
-                      <Pressable
-                        onPress={handleNextStep}
-                        className={`rounded-lg p-3 shadow-lg ${Object.keys(errorsStep1).length > 0 ? "bg-gray-400" : "bg-black"}`}
-                        disabled={Object.keys(errorsStep1).length > 0} // Disable if there are errors
-                      >
-                        <ThemedText className="text-center text-white">
-                          Continue
-                        </ThemedText>
-                      </Pressable>
-                    </ThemedView>
-                  </ScrollView>
-                </>
-              ) : (
-                <>
-                  {/* Step 2: Remaining Fields */}
-                  <ScrollView>
-                    <ThemedView className="mb-2">
-                      <TextInput
-                        placeholder="Full Name"
-                        value={formData.fullName}
-                        onChangeText={(text) => onChangeInput("fullName", text)}
-                        className="border p-2 rounded-md"
-                      />
-                      {errorsStep2.fullName && (
-                        <ThemedText className="text-red-500 mt-1">
-                          {errorsStep2.fullName}
-                        </ThemedText>
-                      )}
-                    </ThemedView>
-                    {isEmailSignUp ? (
-                      <ThemedView className="mb-2">
-                        <MobileInput
-                          placeHolder="Enter Mobile"
-                          value={formData.mobile}
-                          onChangeMobile={(text) =>
-                            onChangeInput("mobile", text)
-                          }
-                          setCountryCode={setCountry}
-                        />
-                        {errorsStep2.mobile && (
-                          <ThemedText className="text-red-500 mt-1">
-                            {errorsStep2.mobile}
-                          </ThemedText>
-                        )}
-                      </ThemedView>
-                    ) : (
-                      <ThemedView className="mb-2">
-                        <TextInput
-                          placeholder="Email"
-                          value={formData.email}
-                          onChangeText={(text) => onChangeInput("email", text)}
-                          className="border p-2 rounded-md"
-                        />
-                        {errorsStep2.email && (
-                          <ThemedText className="text-red-500">
-                            {errorsStep2.email}
-                          </ThemedText>
-                        )}
-                      </ThemedView>
-                    )}
-                    <ThemedView className="mb-2">
-                      <ThemedView className="border p-2 rounded-md">
-                        <DateOfBirthPicker
-                          dob={formData.dob}
-                          setDob={(text) => onChangeInput("dob", text)}
-                        />
-                      </ThemedView>
-                      {errorsStep2.dob && (
-                        <ThemedText className="text-red-500 mt-1">
-                          {errorsStep2.dob}
-                        </ThemedText>
-                      )}
-                    </ThemedView>
-                    <ThemedView className="mb-2">
-                      <ThemedView className="flex-row">
-                        {["Male", "Female"].map((option) => (
-                          <Pressable
-                            key={option}
-                            onPress={() => onChangeInput("dob", option)}
-                            className={`flex-1 p-3 rounded-lg ${
-                              formData.gender === option
-                                ? "bg-black"
-                                : "bg-gray-200"
-                            }`}
-                            style={{ marginRight: option === "Male" ? 8 : 0 }}
-                          >
-                            <ThemedText
-                              className={`text-center ${
-                                formData.gender === option
-                                  ? "text-white"
-                                  : "text-black"
-                              }`}
-                            >
-                              {option}
-                            </ThemedText>
-                          </Pressable>
-                        ))}
-                      </ThemedView>
-                      {errorsStep2.gender && (
-                        <ThemedText className="text-red-500 mt-1">
-                          {errorsStep2.gender}
-                        </ThemedText>
-                      )}
-                    </ThemedView>
-                    <ThemedView className="mb-2">
-                      <TextInput
-                        placeholder="Nationality"
-                        value={formData.nationality}
-                        onChangeText={(text) =>
-                          onChangeInput("nationality", text)
-                        }
-                        className="border p-2  rounded-md"
-                      />
-                      {errorsStep2.nationality && (
-                        <ThemedText className="text-red-500 mt-1">
-                          {errorsStep2.nationality}
-                        </ThemedText>
-                      )}
-                    </ThemedView>
-                    <ThemedView className="mb-2">
-                      <TextInput
-                        placeholder="Residence"
-                        value={formData.residence}
-                        onChangeText={(text) =>
-                          onChangeInput("residence", text)
-                        }
-                        className="border p-2  rounded-md"
-                      />
-                      {errorsStep2.residence && (
-                        <ThemedText className="text-red-500 mt-1">
-                          {errorsStep2.residence}
-                        </ThemedText>
-                      )}
-                    </ThemedView>
-                    <ThemedView className="mb-2">
-                      <TextInput
-                        placeholder="City"
-                        value={formData.city}
-                        onChangeText={(text) => onChangeInput("city", text)}
-                        className="border p-2 rounded-md"
-                      />
-                      {errorsStep2.city && (
-                        <ThemedText className="text-red-500 mt-1">
-                          {errorsStep2.city}
-                        </ThemedText>
-                      )}
-                    </ThemedView>
-                    <ThemedView className="flex-row items-center mb-4">
-                      <Checkbox
-                        value={formData.subscribeNews}
-                        onValueChange={(text) =>
-                          onChangeInput(
-                            "subscribeNews",
-                            !formData.subscribeNews,
-                          )
-                        }
-                        color={
-                          formData.subscribeNews
-                            ? "hsl(220, 89.74358974358974%, 54.11764705882353%)"
-                            : undefined
-                        }
-                      />
-                      <ThemedText className="ml-2">
-                        Subscribe to news and offers
-                      </ThemedText>
-                    </ThemedView>
+                  <TextInput
+                    placeholder={i18n.t("auth.email")}
+                    value={formData.email}
+                    onChangeText={(text) => onChangeInput("email", text)}
+                    className="border p-3 rounded-md mb-2"
+                    style={{ borderColor: getColor("border") }}
+                  />
+                  {errors.email && (
+                    <ThemedText className="text-red-500 mb-2">
+                      {errors.email}
+                    </ThemedText>
+                  )}
+                  <View className="relative">
+                    <TextInput
+                      placeholder={i18n.t("auth.password")}
+                      value={formData.password}
+                      onChangeText={(text) => onChangeInput("password", text)}
+                      secureTextEntry={!showPassword}
+                      className="border p-3 rounded-md mb-2 pr-10"
+                      style={{ borderColor: getColor("border") }}
+                    />
                     <Pressable
-                      onPress={handleSubmit}
-                      className={`rounded-lg p-3 shadow-lg ${Object.keys(errorsStep2).length > 0 ? "bg-gray-400" : "bg-black"}`}
-                      disabled={Object.keys(errorsStep2).length > 0}
+                      onPress={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3"
                     >
-                      <ThemedText className="text-center text-white">
-                        Sign Up
-                      </ThemedText>
+                      <Ionicons
+                        name={showPassword ? "eye-off" : "eye"}
+                        size={24}
+                        color={getColor("text")}
+                      />
                     </Pressable>
-                  </ScrollView>
-                  <Pressable onPress={() => setStep(1)} className="mt-4">
-                    <ThemedText className="text-center text-black">
-                      Go Back
+                  </View>
+                  {errors.password && (
+                    <ThemedText className="text-red-500 mb-2">
+                      {errors.password}
                     </ThemedText>
+                  )}
+                  {errors.api && (
+                    <ThemedText className="text-red-500 mb-2">
+                      {errors.api}
+                    </ThemedText>
+                  )}
+                  <Pressable
+                    onPress={handleLogin}
+                    className="bg-black rounded-lg p-3 shadow-lg mt-4"
+                    style={{ backgroundColor: getColor("primary") }}
+                    disabled={loginLoading}
+                  >
+                    {loginLoading ? (
+                      <ActivityIndicator color={getColor("secondary")} />
+                    ) : (
+                      <ThemedText className="text-center text-white">
+                        {i18n.t("auth.login")}
+                      </ThemedText>
+                    )}
                   </Pressable>
+                  <ThemedText className="text-center mt-4">
+                    {i18n.t("auth.noAccount")}{" "}
+                    <ThemedText
+                      className="text-black font-bold"
+                      onPress={() => setFormType("register")}
+                      style={{ color: getColor("primary") }}
+                    >
+                      {i18n.t("auth.register")}
+                    </ThemedText>
+                  </ThemedText>
+                  <ThemedText className="text-center mt-2">
+                    {i18n.t("auth.forgotPassword")}{" "}
+                    <ThemedText
+                      className="text-black font-bold"
+                      onPress={() => setFormType("reset")}
+                      style={{ color: getColor("primary") }}
+                    >
+                      {i18n.t("auth.reset")}
+                    </ThemedText>
+                  </ThemedText>
                 </>
               )}
-              <ThemedText className="text-center mt-4">
-                Already have an account?{" "}
-                <ThemedText
-                  className="text-black font-bold"
-                  onPress={() => setShowLogin(true)}
-                >
-                  Login
-                </ThemedText>
-              </ThemedText>
+
+              {formType === "register" && (
+                <>
+                  <TextInput
+                    placeholder={i18n.t("auth.fullName")}
+                    value={formData.fullName}
+                    onChangeText={(text) => onChangeInput("fullName", text)}
+                    className="border p-3 rounded-md mb-2"
+                    style={{ borderColor: getColor("border") }}
+                  />
+                  {errors.fullName && (
+                    <ThemedText className="text-red-500 mb-2">
+                      {errors.fullName}
+                    </ThemedText>
+                  )}
+                  <TextInput
+                    placeholder={i18n.t("auth.email")}
+                    value={formData.email}
+                    onChangeText={(text) => onChangeInput("email", text)}
+                    className="border p-3 rounded-md mb-2"
+                    style={{ borderColor: getColor("border") }}
+                  />
+                  {errors.email && (
+                    <ThemedText className="text-red-500 mb-2">
+                      {errors.email}
+                    </ThemedText>
+                  )}
+                  <ThemedView className="mb-2">
+                    <MobileInput
+                      placeHolder={i18n.t("auth.mobile")}
+                      value={formData.mobile}
+                      onChangeMobile={(text) => onChangeInput("mobile", text)}
+                      setCountryCode={setCountryCode}
+                    />
+                  </ThemedView>
+                  {errors.mobile && (
+                    <ThemedText className="text-red-500 mb-2">
+                      {errors.mobile}
+                    </ThemedText>
+                  )}
+                  <GenderInput
+                    value={formData.gender}
+                    onChangeGender={(gender) => onChangeInput("gender", gender)}
+                  />
+                  {errors.gender && (
+                    <ThemedText className="text-red-500 mb-2">
+                      {errors.gender}
+                    </ThemedText>
+                  )}
+                  <DateOfBirthPicker
+                    dob={formData.dob}
+                    setDob={(date) => onChangeInput("dob", date)}
+                  />
+                  {errors.dob && (
+                    <ThemedText className="text-red-500 mb-2">
+                      {errors.dob}
+                    </ThemedText>
+                  )}
+                  <View className="relative">
+                    <TextInput
+                      placeholder={i18n.t("auth.password")}
+                      value={formData.password}
+                      onChangeText={(text) => onChangeInput("password", text)}
+                      secureTextEntry={!showPassword}
+                      className="border p-3 rounded-md mb-2 pr-10"
+                      style={{ borderColor: getColor("border") }}
+                    />
+                    <Pressable
+                      onPress={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3"
+                    >
+                      <Ionicons
+                        name={showPassword ? "eye-off" : "eye"}
+                        size={24}
+                        color={getColor("text")}
+                      />
+                    </Pressable>
+                  </View>
+                  {errors.password && (
+                    <ThemedText className="text-red-500 mb-2">
+                      {errors.password}
+                    </ThemedText>
+                  )}
+                  <View className="relative">
+                    <TextInput
+                      placeholder={i18n.t("auth.confirmPassword")}
+                      value={formData.confirmPassword}
+                      onChangeText={(text) =>
+                        onChangeInput("confirmPassword", text)
+                      }
+                      secureTextEntry={!showConfirmPassword}
+                      className="border p-3 rounded-md mb-2 pr-10"
+                      style={{ borderColor: getColor("border") }}
+                    />
+                    <Pressable
+                      onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-3"
+                    >
+                      <Ionicons
+                        name={showConfirmPassword ? "eye-off" : "eye"}
+                        size={24}
+                        color={getColor("text")}
+                      />
+                    </Pressable>
+                  </View>
+                  {errors.confirmPassword && (
+                    <ThemedText className="text-red-500 mb-2">
+                      {errors.confirmPassword}
+                    </ThemedText>
+                  )}
+                  <Pressable
+                    onPress={handleRegister}
+                    className="bg-black rounded-lg p-3 shadow-lg mt-4"
+                    style={{ backgroundColor: getColor("primary") }}
+                    disabled={registerLoading}
+                  >
+                    {registerLoading ? (
+                      <ActivityIndicator color={getColor("secondary")} />
+                    ) : (
+                      <ThemedText className="text-center text-white">
+                        {i18n.t("auth.register")}
+                      </ThemedText>
+                    )}
+                  </Pressable>
+                  <ThemedText className="text-center mt-4">
+                    {i18n.t("auth.haveAccount")}{" "}
+                    <ThemedText
+                      className="text-black font-bold"
+                      onPress={() => setFormType("login")}
+                      style={{ color: getColor("primary") }}
+                    >
+                      {i18n.t("auth.login")}
+                    </ThemedText>
+                  </ThemedText>
+                </>
+              )}
+
+              {formType === "reset" && (
+                <>
+                  <TextInput
+                    placeholder={i18n.t("auth.enterEmail")}
+                    value={formData.email}
+                    onChangeText={(text) => onChangeInput("email", text)}
+                    className="border p-2 mb-2 rounded-md"
+                    style={{ borderColor: getColor("border") }}
+                  />
+                  {errors.email && (
+                    <ThemedText className="text-red-500 mb-2">
+                      {errors.email}
+                    </ThemedText>
+                  )}
+                  <Pressable
+                    onPress={handlePasswordReset}
+                    className="bg-black rounded-lg p-3 shadow-lg mt-4"
+                    style={{ backgroundColor: getColor("primary") }}
+                    disabled={resetLoading}
+                  >
+                    {resetLoading ? (
+                      <ActivityIndicator color={getColor("secondary")} />
+                    ) : (
+                      <ThemedText className="text-center text-white">
+                        {i18n.t("auth.resetPassword")}
+                      </ThemedText>
+                    )}
+                  </Pressable>
+                  <ThemedText
+                    className="text-center mt-4 text-black font-bold"
+                    onPress={() => setFormType("login")}
+                    style={{ color: getColor("primary") }}
+                  >
+                    {i18n.t("auth.backToLogin")}
+                  </ThemedText>
+                </>
+              )}
             </>
           )}
         </ThemedView>
-      </ThemedView>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };

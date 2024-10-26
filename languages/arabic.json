@@ -1,4 +1,32 @@
 {
+  "auth": {
+    "fullName": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "mobile": "الهاتف",
+    "gender": "الجنسية",
+    "nationality": "الجنسية",
+    "residence": "المنصب",
+    "city": "المدينة",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "haveAccount": "هل لديك حساب؟",
+    "register": "التسجيل",
+    "login": "تسجيل الدخول",
+    "reset": "إعادة تعيين كلمة المرور",
+    "backToLogin": "العودة إلى تسجيل الدخول",
+    "noAccount": "ليس لديك حساب؟",
+    "forgotPassword": "هل نسيت كلمة المرور؟",
+    "male": "ذكر",
+    "female": "أنثى",
+    "verifyOTP": "تحقق من الرمز المروري",
+    "enterOTP": "أدخل الرمز المروري",
+    "resendOTP": "إعادة إرسال الرمز المروري",
+    "logout": "تسجيل الخروج",
+    "logoutConfirmTitle": "تأكيد الخروج",
+    "logoutConfirmMessage": "هل أنت متأكد من تسجيل الخروج؟",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "enterEmail": "أدخل البريد الإلكتروني"
+  },
   "name": "ميغا ديلز",
   "CFBundleDisplayName": "ميغا ديلز",
   "home": {
@@ -56,10 +84,6 @@
     "light": "فاتح",
     "locale": "العربية"
   },
-  "news": {
-    "title": "الأخبار",
-    "publishedOn": "نشر في"
-  },
   "legal": {
     "title": "القوانين",
     "termsAndConditions": "أحكام الاستخدام",
@@ -76,11 +100,8 @@
     "ok": "موافق",
     "goBack": "العودة",
     "loading": "جاري التحميل...",
-    "noData": "لا يوجد بيانات"
-  },
-  "csr": {
-    "title": "CSR",
-    "downloadReport": "تحميل التقرير"
+    "noData": "لا يوجد بيانات",
+    "cancel": "إلغاء"
   },
   "help": {
     "title": "المساعدة",

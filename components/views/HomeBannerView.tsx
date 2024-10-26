@@ -22,10 +22,9 @@ interface Banner {
       base64: string;
     };
   };
-  gameId: string;
+  productId: string;
   subHeading: string;
   title: string;
-  webLink: string;
 }
 
 export default function HomeBannerView() {
@@ -73,7 +72,7 @@ export default function HomeBannerView() {
               className="flex-1 justify-center items-center"
             >
               <Pressable
-                onPress={() => handlePress(item.gameId)}
+                onPress={() => handlePress(item.productId)}
                 className="w-full h-full px-4 py-2"
               >
                 {imageLoading ? (

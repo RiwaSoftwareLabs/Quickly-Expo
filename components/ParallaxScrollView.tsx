@@ -30,10 +30,9 @@ interface Banner {
       base64: string;
     };
   };
-  gameId: string;
+  productId: string;
   subHeading: string;
   title: string;
-  webLink: string;
 }
 
 type Props = PropsWithChildren<{
@@ -112,7 +111,7 @@ export default function ParallaxScrollView({
                     }}
                   >
                     <Pressable
-                      onPress={() => onPress(item.gameId)}
+                      onPress={() => onPress(item.productId)}
                       style={{ padding: 4 }}
                     >
                       <Image

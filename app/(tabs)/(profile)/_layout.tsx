@@ -22,18 +22,6 @@ export default function ProfileLayout() {
     >
       <Stack.Screen name="profile" options={{ headerShown: false }} />
       <Stack.Screen
-        name="(news)"
-        options={{
-          header: () => (
-            <HeaderView
-              title={i18n.t("news.title")}
-              onPressBack={router.back}
-              pressBackTitle={i18n.t("common.goBack")}
-            />
-          ),
-        }}
-      />
-      <Stack.Screen
         name="(legal)"
         options={{
           header: () => (
@@ -63,18 +51,6 @@ export default function ProfileLayout() {
           header: () => (
             <HeaderView
               title={i18n.t("about.title")}
-              onPressBack={router.back}
-              pressBackTitle={i18n.t("common.goBack")}
-            />
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="csr"
-        options={{
-          header: () => (
-            <HeaderView
-              title={i18n.t("csr.title")}
               onPressBack={router.back}
               pressBackTitle={i18n.t("common.goBack")}
             />
