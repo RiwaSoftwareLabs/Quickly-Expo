@@ -139,7 +139,8 @@ const ProfileScreen: React.FC = () => {
             email={user?.email || ""}
           />
         </ThemedView>
-        <ScrollView className="mt-6 w-full flex-1">
+        <ScrollView className="mt-6 w-full flex-1"
+        >
           {menuSections.map((section, sectionIndex) => (
             <ThemedView
               key={sectionIndex}
@@ -195,6 +196,8 @@ const ProfileScreen: React.FC = () => {
       className="pt-4"
       keyboardShouldPersistTaps="handled"
       style={{ backgroundColor: getColor("background") }}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
     >
       {isLoggedIn ? (
         renderLoggedInContent()

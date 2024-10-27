@@ -41,18 +41,6 @@ export default function HomeLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="details"
-        options={{
-          header: () => (
-            <HeaderView
-              title={i18n.t("home.detailsTitle")}
-              onPressBack={handleGoBack}
-              pressBackTitle={i18n.t("common.goBack")}
-            />
-          ),
-        }}
-      />
     </Stack>
   );
 }

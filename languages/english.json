@@ -35,7 +35,8 @@
     "sectionTitle": "Game Deals",
     "detailsTitle": "Details",
     "productInformation": "Product Information",
-    "shippingReturns": "Shipping & Returns"
+    "shippingReturns": "Shipping & Returns",
+    "searchPlaceholder": "Search ..."
   },
   "cart": {
     "title": "Cart",

@@ -35,7 +35,8 @@
     "sectionTitle": "عروض الألعاب",
     "detailsTitle": "التفاصيل",
     "productInformation": "معلومات المنتج",
-    "shippingReturns": "التوصيل والإرجاع"
+    "shippingReturns": "التوصيل والإرجاع",
+    "searchPlaceholder": "ابحث ..."
   },
   "cart": {
     "title": "عربة التسوق",
